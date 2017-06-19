@@ -1,6 +1,7 @@
 
+*.o
+
 # Executables
 *.exe
 *.out
 *.app
-
