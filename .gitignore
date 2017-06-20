@@ -1,7 +1,4 @@
+*
 
-*.o
-
-# Executables
-*.exe
-*.out
-*.app
+!*.cpp
+!*/
