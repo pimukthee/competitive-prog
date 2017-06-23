@@ -14,4 +14,3 @@ int main() {
     printf("%d", ans);
     return 0;
 }
-for_each
