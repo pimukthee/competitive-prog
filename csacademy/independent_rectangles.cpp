@@ -2,15 +2,25 @@
 
 using namespace std;
 
-int w[100005], h[100005], wm, hm;
+bool cmp(const pair <int, int>& a, const pair <int, int>& b) {
+    if (a.first != b.first) return a.first > b.first;
+    else return a.second < b.second;
+}
 
 int main() {
     int n, ans = 0;
     scanf("%d", &n);
-    for (int i = 0; i < n; i++) scanf("%d %d", &w[i], &h[i]);
-    wm = *max_element(w, w + n);
-    hm = *max_element(h, h + n);
-    for (int i = 0; i < n; ++i) ans += (w[i] == wm || h[i] == hm);
+    vector <pair <int, int> > rec(n);
+    for (int i = 0; i < n; i++) scanf("%d %d", &rec[i].first, &rec[i].second);
+    sort(rec.begin(), rec.end(), cmp);
+    pair <int, int> m(-1, -1);
+    for (auto& i: rec) {
+        if (i.second >= m.second) {
+            ans++;
+            m = i;
+        }
+    }
+
     printf("%d", ans);
     return 0;
 }
