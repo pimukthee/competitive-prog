@@ -1,7 +1,9 @@
 #include <cstdio>
 #include <algorithm>
+
 using namespace std;
 char table[100][100];
+
 int main()
 {
     int n,m,top=-1,bot,left=100,right=-1;

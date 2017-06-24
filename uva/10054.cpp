@@ -1,53 +1,77 @@
-#include <cstdio>
-#include <algorithm>
-#include <stack>
-#include <vector>
-using namespace std;
-bool mark[60][60];
-int n;
-typedef pair<int,int> ii;
-vector<ii> adj[60];
 
-bool dfs(stack<ii> st,int node){
-	bool chk = false;
-	if(adj[node].size()%2==1) return false;
-	for(int i=0;i<adj[node].size();i++){
-		
-		st.push( ii(node,adj[node][i].second) );
-		mark[node][adj[node][i]] = true;
-		mark[adj[node][i]][node] = true;
-		return dfs(st,adj[node][i]);
-		chk = true;
-	}
-	if(!chk){
-		while(!st.empty()){
-			printf("%d %d\n",st.top().first,st.top().second);
-			st.pop();
-			return true;
-		}
-	}
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int bead[1111][1111];
+int T;
+int N;
+int a,b;
+int x,y;
+vector<int> ans;
+void clear() {
+    for(int i = 0 ; i < 51 ; i++) {
+        for (int j = 0 ; j < 51; j++) {
+            bead[i][j] = 0;
+        }
+    }
+}
+
+void dfs(int s) {
+    for(int d = 0 ; d < 51 ; d ++) {
+        if(bead[s][d]>0) {
+            bead[s][d]--;
+            bead[d][s]--;
+            dfs(d);
+        }
+    }
+    ans.push_back(s);
+}
+
+void process(int first_color){
+    // Euler Check
+    int cnt;
+    for(int i = 0 ; i < 51 ; i++ ) {
+        cnt = 0;
+        for( int j = 0 ; j < 51 ; j++) {
+            cnt += bead[i][j];
+        }
+        if(cnt%2!=0) {
+            printf("some beads may be lost\n");
+            return;
+        }
+    }
+
+    dfs(x);
+
+    for(int i = 0; i < ans.size()-1; i++ ) {
+        printf("%d %d\n", ans[i], ans[i+1]);
+    }
 
 }
 
 
-int main(){
-	int T,a,b,c=1;
-	scanf("%d",&T);
-	while(T--){
-		
-		for(int i=0;i<60;i++)
-			for(int j=0;j<60;j++)
-				mark[i][j] = false;
-	
-		scanf("%d",&n);
-		for(int i=0;i<n;i++){
-			scanf("%d %d",&a,&b);
-			adj[a].push_back(ii(b,1));
-			adj[b].push_back(ii(a,1));
-		}
-		stack<int> st;
-		printf("Case #%d\n",c++);
-		if(! dfs(st , a)) printf("some beads may be lost\n");	
-		printf("\n");
-	}
+
+int main(int argc, const char * argv[]) {
+
+    scanf("%d", &T);
+
+    for(int tc=1;tc<=T;tc++) {
+        scanf("%d", &N);
+        clear();
+        for (int i=0;i<N;i++) {
+            cin >> a >> b;
+            bead[a][b]++;
+            bead[b][a]++;
+            x = a;
+        }
+        if(tc!=1) putchar('\n');
+        printf("Case #%d\n", tc);
+        ans.clear();
+        process(x);
+    }
+
+
+    return 0;
 }

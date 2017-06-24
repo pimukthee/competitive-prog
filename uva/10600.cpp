@@ -1,78 +1,63 @@
-#include <iostream>
+#include <cstdio>
 #include <vector>
 #include <algorithm>
-#define INF 2000000000; 
+#include <utility>
+#define mp make_pair
 using namespace std;
-typedef pair<int,int> ii;
-int T,n,m,a,b,c;
-bool mark[110*100];
-pair<int,ii> edge[110*110];
-vector<int> e;
-typedef vector<int> vi;
-
-class UnionFind {
-	private: vi p, rank;
-	public:
-		UnionFind(int N) { 
-			N+=10;
-			rank.assign(N, 0);
-			p.assign(N, 0); 
-			for (int i = 0; i < N; i++) 
-				p[i] = i;
-		}
-		int findSet(int i) { return (p[i] == i) ? i : (p[i] = findSet(p[i])); }
-		bool isSameSet(int i, int j) { return findSet(i) == findSet(j); }
-		bool unionSet(int i, int j) {
-			if (!isSameSet(i, j)) {
-				int x = findSet(i), y = findSet(j);
-				if (rank[x] > rank[y]) p[y] = x;
-				else {
-					p[x] = y; 
-					if (rank[x] == rank[y]) rank[y]++; 
-				}
-				return true;
-			}
-			return false;
-		}
-};
-
-int MST(bool p){
-	int count=0,ans=0;
-	UnionFind s(110*110);
-	for(int i=0;i<m;i++){
-		if( mark[i] ) continue;
-		if( s.unionSet(edge[i].second.first,edge[i].second.second) ){
-			ans += edge[i].first;
-			if(!p) e.push_back(i);
-			count++;
-		}
-		if(count==n-1) return ans; 
-	}
-	return INF;
+vector <int> head(110);
+vector <bool> mark(15000);
+vector <pair<int,pair<int,int> > > G;
+int findhead(int x)
+{
+    if(x==head[x]) return x;
+    return head[x] = findhead(head[x]);
 }
-
-
-int main(){
-	cin>>T;
-	while(T--){
-		e.clear();
-		cin >> n >> m;
-		for(int i=0;i<110*110+10;i++) mark[i] = false;
-		for(int i=0;i<m;i++){
-			cin >> a >> b >> c;
-			edge[i] = pair<int,ii>(c,ii(a,b));
-		}
-		sort(edge,edge+m);	
-		int ans1,ans2=INF;
-		ans1 = MST(false);		
-			
-		for(int i=0;i<e.size();i++){
-			mark[e[i]] = true;	
-			int x =  MST(true);
-			ans2 = min(ans2,x);
-			mark[e[i]] = false;
-		}
-		cout << ans1 << " " << ans2 << endl;
-	}
-	return 0;
+int MST(int m,int n,int ignore)
+{
+    int cnt =0,sum=0;
+    for(int i=0; i<m && cnt<n-1 ; i++)
+    {
+        int u = findhead(G[i].second.first);
+        int v = findhead(G[i].second.second);
+        if(i!=ignore && u!=v)
+        {
+            sum += G[i].first;
+            head[v]=u;
+            if(ignore==-1)
+                mark[i] = true;
+            cnt++;
+        }
+    }
+    return cnt==n-1?sum:1000000000;
+}
+int main()
+{
+    int T,n,m,a,b,c;
+    scanf("%d",&T);
+    while(T--)
+    {
+        mark.assign(15000,false);
+        scanf("%d%d",&n,&m);
+        for(int i=0; i<=n; i++) head[i]=i;
+        G.clear();
+        for(int i=0; i<m; i++)
+        {
+            scanf("%d%d%d",&a,&b,&c);
+            G.push_back(mp(c,mp(a,b)));
+        }
+        sort(G.begin(),G.end());
+        int ans1 =  MST(m,n,-1),ans2=1000000000;
+        for(int i=0; i<m; i++)
+        {
+            for(int i=0; i<=n; i++) head[i]=i;
+            if(mark[i])
+            {
+                int temp = MST(m,n,i);
+                ans2 = min(ans2,temp);
+                //printf("%d %d\n",i,temp);
+            }
+        }
+        printf("%d %d\n",ans1,ans2);
+    }
+    return 0;
 }

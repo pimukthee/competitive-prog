@@ -1,25 +1,22 @@
-#include <iostream>
+#include <cstdio>
 #include <algorithm>
 using namespace std;
-
-int main(){
-	int n,t,x[10000],ans;
-	cin>>n;
-	while(n>0){
-		cin>>ans;
-		for(int i=1;i<n;i++){
-			cin>>x[i];
-		}
-		ans = t = x[0];	
-		for(int i=1;i<n;i++){
-			if(x[i] > t+x[i] ) t = x[i];
-			else t+=x[i];
-			ans = max(ans,t);	
-		}
-		if(ans>0) cout<<"The maximum winning streak is "<<ans<<".";
-		else cout<<"Losing streak.";
-		cout<<endl;
-		cin>>n;
-	}
-	return 0;
+int main()
+{
+    int n;
+    while(scanf("%d",&n)&&n)
+    {
+        int s = -10000,p=-10000,k;
+        for(int i=0; i<n; i++)
+        {
+            scanf("%d",&k);
+            s = max(s+k,k);
+            p = max(s,p);
+        }
+        if(p<=0)
+            printf("Losing streak.\n");
+        else
+            printf("The maximum winning streak is %d.\n",p);
+    }
+    return 0;
 }
