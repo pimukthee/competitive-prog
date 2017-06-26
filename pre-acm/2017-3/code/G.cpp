@@ -1,122 +1,98 @@
 #include <bits/stdc++.h>
+
 using namespace std;
 
+#define INF 500000000
+#define maxN 105
 
-#define NN 105
+int n, k, path[maxN];
+long long cost[maxN][maxN], d[maxN], ans, capa[maxN][maxN];
+bool visit[maxN];
 
-long long cap[NN][NN];
-long long cost[NN][NN];
-long long fnet[NN][NN], d[NN];
-vector <int> adj[NN];
-
-int par[NN]; // par[source] = source;
-
-// Labelling function
-long long pi[NN];
-
-#define Inf 1000000000
-
-// Dijkstra's using non-negative edge weights (cost + potential)
-#define Pot(u, v) (d[u] + pi[u] - pi[v])
-bool dijkstra(int n, int s, int t)
+bool find_path()
 {
-    for (int i = 1; i <= n; i++)
-        d[i] = Inf, par[i] = -1;
-    d[s] = 0;
-    par[s] = -n - 1;
-
-    while (1)
-    {
-        // find u with smallest d[u]
-        int u = -1, bestD = Inf;
-        for (int i = 1; i <= n; i++)
-            if (par[i] < 0 && d[i] < bestD) {
-                bestD = d[i];
-                u = i;
+    for (int i = 1; i <= n; ++i) {
+        d[i] = INF;
+        path[i] = 0;
+        visit[i] = false;
+    }
+    queue<int> q;
+    q.push(1);
+    d[1] = 0;
+    visit[1] = true;
+    while (!q.empty()) {
+        int u = q.front();
+        q.pop();
+        visit[u] = false;
+        for (int i = 1; i <= n; ++i) {
+            if (capa[u][i] > 0 && d[u] + cost[u][i] < d[i]) {
+                d[i] = d[u] + cost[u][i];
+                path[i] = u;
+                if (!visit[i]) {
+                    q.push(i);
+                    visit[i] = true;
+                }
             }
-        if (bestD == Inf)
-            break;
-
-        // relax edge (u,i) or (i,u) for all i;
-        par[u] = -par[u] - 1;
-        for (int v : adj[u])
-        {
-            // try undoing edge v->u
-            if (par[v] >= 0)
-                continue;
-            if (fnet[v][u] && d[v] > d[u] - cost[v][u])
-                d[v] = d[u] - cost[v][u], par[v] = -u - 1;
-
-            // try edge u->v
-            if (fnet[u][v] < cap[u][v] && d[v] > Pot(u, v) + cost[u][v])
-                d[v] = d[u] + cost[u][v], par[v] = -u - 1;
         }
     }
 
-    for (int i = 1; i <= n; i++)
-        if (pi[i] < Inf)
-            pi[i] += d[i];
-
-    return par[t] >= 0;
+    return path[n];
 }
-#undef Pot
 
-void mcmf3(int n, int s, int t, long long &fcost, int& flow)
+void max_flow()
 {
-    // build the adjacency list
-    fcost = 0;
-
-    // repeatedly, find a cheapest path from s to t
-    while (dijkstra(n, s, t) && flow > 0)
-    {
-        // get the bottleneck capacity
-        long long bot = Inf;
-        for (int v = t, u = par[v]; v != s; u = par[v]) {
-            bot = min(bot, fnet[v][u] ? fnet[v][u] : (cap[u][v] - fnet[u][v]));
-           // cout << u << endl;
-            v = u;
-        }
-        printf ("%d ", n);
-        for (int v = t, u = par[v]; v != s; u = par[v]) {
-            printf ("%d ", u);
-            if (fnet[v][u]) {
-                fnet[v][u] -= bot;
-                fcost -= bot * cost[v][u];
-            } else {
-                fnet[u][v] += bot;
-                fcost += bot * cost[u][v];
-            }
-            v = u;
-        }
-        printf("\n");
-        flow -= bot;
-    }
-
+    int u, v;
+    long long sent = INF;
+    v = n;
+    do {
+        u = path[v];
+        sent = min(sent, capa[u][v]);
+        v = u;
+    } while (v != 1);
+    v = n;
+    do {
+        u = path[v];
+        capa[u][v] -= sent;
+        capa[v][u] += sent;
+        cost[v][u] = -cost[v][u];
+        cost[u][v] = -cost[u][v];
+        v = u;
+    } while (v != 1);
+    k -= sent;
+    ans += sent * d[n];
 }
-
 int main()
 {
-    int n;
-    int m, a, b;
-    long long c, cp;
+    int m, u, v;
     scanf("%d %d", &n, &m);
-
-    for (int i = 0; i < m; i++)
-    {
-        scanf("%d %d %lld %lld", &a, &b, &cp, &c);
-        cost[a][b] = c;  
-        cost[b][a] = c;
-        cap[a][b] = cp;  
-        cap[b][a] = cp;
-        adj[a].push_back(b);
-        adj[b].push_back(a);
+    for (int i = 1; i <= n; ++i) for (int j = 1; j <= n; ++j) cost[i][j] = INF;
+    while (m--) {
+        scanf("%d %d", &u, &v);
+        scanf("%lld %lld", &capa[u][v], &cost[u][v]);
+        cost[v][u] = cost[u][v];
+        capa[v][u] = capa[u][v];
     }
-    int flow;
-    long long fcost = 0;
-    scanf("%d", &flow);
-    mcmf3(n, 1, n, fcost, flow);
-    if (flow > 0) printf("NO");
-    else printf("%lld", fcost);
+
+   /* for (int i = 1; i <= n; ++i) {
+        for (int j = 1; j <= n; ++j) {
+            cout << capa[i][j] << " ";
+        }
+        cout << endl;
+    }*/
+
+    scanf("%d", &k);
+
+    ans = 0;
+    while (k && find_path()) max_flow();
+
+    /*cout << n ;
+    do {
+        n = path[n];
+        cout << " " << n;
+    } while (n != 1);*/
+
+    if (k) printf("NO\n");
+    else printf("%lld\n", ans);
 
     return 0;
 }
