@@ -1,17 +1,12 @@
-#include <cstdio>
-int main()
-{
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int main () {
     int n;
-    scanf("%d",&n);
-    for(int i=1; i<=n; i++)
-    {
-        if(i&1)
-            printf("I hate ");
-        else
-            printf("I love ");
-        if(i!=n)
-            printf("that ");
+    scanf("%d", &n);
+    for (int i = 1; i <= n ; ++i) {
+        printf("I %s %s", (i & 1) ? "hate" : "love", i == n ? "it\n":"that ");
     }
-    printf("it");
     return 0;
 }
