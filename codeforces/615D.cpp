@@ -1,41 +1,42 @@
-#include <iostream>
-#include <vector>
-#include <cstdio>
-#include <cstdlib>
-#include <cmath>
-#include <utility>
-#include <algorithm>
-#define pb push_back
-#define mp make_pair
-#define sqr(x) x*x
-#define LL long long
-#define F first
-#define S second
-#define vi vector<int>
-#define pi pair<int,int>
+#include <bits/stdc++.h>
+
+const long long mod = 1e9 + 7;
+const long long mod2 = (mod - 1) * 2;
 using namespace std;
-LL mod = 1e9+7;
-int main()
-{
-    int n;
-    LL k,ans=1,pro=1;
-    scanf("%d",&n);
-    while(n--)
-    {
-        scanf("%I64d",&k);
-        pro = (pro*k)%mod;
+
+int cnt[200005];
+
+long long p(long long n, long long k) {
+    long long d = 1;
+    while(k > 0){
+        if(k & 1)
+            d = (d * n) % mod;
+        n = (n * n) % mod;
+      k >>= 1;
     }
-    int i;
-    for(i=1; i*i<pro; i++)
-    {
-        if(pro%i==0)
-        {
-            ans = (ans*i)%mod;
-            ans = (ans*(pro/i))%mod;
-        }
+    
+    return d;
+}
+
+int main() {
+    int m;
+
+    scanf("%d", &m);
+    while (m--) {
+        int p;
+        scanf("%d", &p);
+        cnt[p]++;
     }
-    if(i*i==k)
-        ans=(ans*i)%mod;
-    printf("%I64d",ans);
+    
+    long long number_of_factor = 1, ans = 1;
+    
+    for (long long i = 0; i <= 200000; ++i) number_of_factor = (number_of_factor * (cnt[i] + 1ll)) % mod2;
+    for (long long i = 2; i <= 200000; ++i) {
+        if (cnt[i] > 0) 
+            ans = ans * p(i, (number_of_factor * cnt[i] % mod2) >> 1) % mod;
+    }
+
+    printf("%lld\n", ans);
+
     return 0;
 }
