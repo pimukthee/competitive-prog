@@ -2,44 +2,20 @@
 
 using namespace std;
 
-int sumDivisorsOfDivisors(int n)
-{
+bool p[1000005];
+vector <int> v;
 
-    map<int, int> mp;
-    for (int j = 2; j <= sqrt(n); j++) {
-        int count = 0;
-        while (n % j == 0) {
-            n /= j;
-            count++;
-        }
-
-        if (count)
-            mp[j] = count;
-    }
-
-    if (n != 1)
-        mp[n] = 1;
-
-    int ans = 1;
-    for (auto it : mp) {
-        int pw = 1, k = 1;
-        int sum = 0;
-        cout << it.first << "====" << endl;
-        for (int i = it.second + 1; i >= 1; i--) {
-            cout << k << endl;
-            sum += k;
-            k = (k * it.first) + 1;
-            pw *= it.first;
-        }
-        ans *= sum;
-    }
-
-    return ans;
-}
 
 int main() {
-    int n = 25;
-    cout << sumDivisorsOfDivisors(n) << endl;
+    for (int i = 2; i <= 1000000; ++i) {
+        if (!p[i]) {
+            v.push_back(i);
+            for (int j = i + i; j <= 1000000; j += i)
+                p[j] = true;
+        }
+    }
+
+    cout << v.size() << endl;
 
     return 0;
 }
