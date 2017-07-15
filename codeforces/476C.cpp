@@ -1,14 +1,18 @@
-#include <iostream>
-long long mod = 1000000007;
+#include <bits/stdc++.h>
+
 using namespace std;
-int main()
-{
-    long long a,b;
+
+const long long MOD = 1e9 + 7;
+
+int main() {
+    long long a, b;
+
     cin >> a >> b;
-    long long B = (b*(b-1)/2) % mod ;
-    long long A1 = (a*(a+1)/2) % mod ;
-    long long A = (A1*b+a) % mod ;
-    long long ans = (A*B) % mod ;
-    cout << ans;
+
+    long long sb = (b*(b - 1) / 2) % MOD;
+    long long sa = (a*(a + 1) / 2) % MOD;
+
+    cout << ((((b * sa) % MOD + a) % MOD) * sb ) % MOD << endl;
+
     return 0;
 }
