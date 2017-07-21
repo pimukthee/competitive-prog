@@ -16,8 +16,7 @@ int main() {
         }
     }
 
-    sort(odd.begin(), odd.end());
-    reverse(odd.begin(), odd.end());
+    sort(odd.begin(), odd.end(), greater<int>());
     ans += odd[0];
     for (int i = 1; i < odd.size(); ++i) {
         if (odd[i] > 0) {
